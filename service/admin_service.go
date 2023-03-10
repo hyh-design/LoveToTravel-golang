@@ -11,10 +11,10 @@ import (
 )
 
 type AdminService struct {
-	ID       string `form:"id" json:"id"`
-	Name     string `form:"name" json:"name"`
-	Email    string `form:"email" json:"email"`
-	Password string `form:"password" json:"password"`
+	ID       string
+	Name     string
+	Email    string
+	Password string
 }
 
 // GetAdminByEmail
@@ -48,6 +48,10 @@ func (service *AdminService) GetAdminList(ctx context.Context) serializer.Respon
 // @Router /admin [post]
 func (service *AdminService) CreateAdmin(ctx context.Context) serializer.Response {
 	adminDao := dao.NewAdminDao(ctx)
+	isExist, _ := adminDao.GetAdminByEmail(service.Email)
+	if isExist.ID != "" {
+		return serializer.Error()
+	}
 	snowFlake := utils.SnowFlake{}
 	id := snowFlake.Generate()
 	admin := &model.Admin{
@@ -83,13 +87,17 @@ func (service *AdminService) Login(ctx context.Context) serializer.Response {
 // @Router /admin [put]
 func (service *AdminService) UpdateAdmin(ctx context.Context) serializer.Response {
 	adminDao := dao.NewAdminDao(ctx)
+	_, err := adminDao.GetAdminById(service.ID)
+	if err != nil {
+		return serializer.Error()
+	}
 	admin := &model.Admin{
 		ID:       service.ID,
 		Name:     service.Name,
 		Email:    service.Email,
 		Password: service.Password,
 	}
-	err := adminDao.UpdateAdmin(service.ID, admin)
+	err = adminDao.UpdateAdmin(service.ID, admin)
 	if err != nil {
 		logging.Info(err)
 		return serializer.Error()

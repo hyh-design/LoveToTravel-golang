@@ -27,6 +27,13 @@ func (dao *AdminDao) Login(admin *model.Admin) (err error) {
 	return
 }
 
+func (dao *AdminDao) GetAdminById(id string) (admin *model.Admin, err error) {
+	err = dao.DB.Model(&model.Admin{}).
+		Where("id=?", id).
+		First(&admin).Debug().Error
+	return
+}
+
 func (dao *AdminDao) GetAdminByEmail(email string) (admin *model.Admin, err error) {
 	err = dao.DB.Model(&model.Admin{}).
 		Where("email=?", email).
