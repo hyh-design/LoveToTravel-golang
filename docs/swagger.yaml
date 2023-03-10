@@ -1,5 +1,5 @@
 info:
-  contact: {}
+  contact: { }
 paths:
   /index:
     get:
@@ -9,29 +9,29 @@ paths:
           schema:
             type: string
       tags:
-      - test-index
+        - test-index
   /user:
     post:
-      responses: {}
+      responses: { }
       tags:
-      - user-service
+        - user-service
     put:
-      responses: {}
+      responses: { }
       tags:
-      - user-service
+        - user-service
   /user/:email:
     get:
-      responses: {}
+      responses: { }
       tags:
-      - user-service
+        - user-service
   /user/:id:
     delete:
-      responses: {}
+      responses: { }
       tags:
-      - user-service
+        - user-service
   /user/list:
     get:
-      responses: {}
+      responses: { }
       tags:
-      - user-service
+        - user-service
 swagger: "2.0"

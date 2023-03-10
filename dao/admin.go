@@ -15,8 +15,8 @@ func NewAdminDao(ctx context.Context) *AdminDao {
 	return &AdminDao{config.NewDBClient(ctx)}
 }
 
-func (dao *AdminDao) CreateAdmin(Admin *model.Admin) (err error) {
-	err = dao.DB.Model(&model.Admin{}).Create(&Admin).Debug().Error
+func (dao *AdminDao) CreateAdmin(admin *model.Admin) (err error) {
+	err = dao.DB.Model(&model.Admin{}).Create(&admin).Debug().Error
 	return
 }
 
