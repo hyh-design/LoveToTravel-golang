@@ -1,0 +1,37 @@
+info:
+  contact: {}
+paths:
+  /index:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      tags:
+      - test-index
+  /user:
+    post:
+      responses: {}
+      tags:
+      - user-service
+    put:
+      responses: {}
+      tags:
+      - user-service
+  /user/:email:
+    get:
+      responses: {}
+      tags:
+      - user-service
+  /user/:id:
+    delete:
+      responses: {}
+      tags:
+      - user-service
+  /user/list:
+    get:
+      responses: {}
+      tags:
+      - user-service
+swagger: "2.0"

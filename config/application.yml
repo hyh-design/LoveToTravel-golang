@@ -1,0 +1,2 @@
+mysql:
+  dns: userservice:2x8R3WmbCzt6tcEd@tcp(47.98.138.0:3306)/userservice?charset=utf8mb4&parseTime=True&loc=Local

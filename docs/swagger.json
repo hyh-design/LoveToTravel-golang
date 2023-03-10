@@ -1,0 +1,61 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/index": {
+            "get": {
+                "tags": [
+                    "test-index"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user": {
+            "put": {
+                "tags": [
+                    "user-service"
+                ],
+                "responses": {}
+            },
+            "post": {
+                "tags": [
+                    "user-service"
+                ],
+                "responses": {}
+            }
+        },
+        "/user/:email": {
+            "get": {
+                "tags": [
+                    "user-service"
+                ],
+                "responses": {}
+            }
+        },
+        "/user/:id": {
+            "delete": {
+                "tags": [
+                    "user-service"
+                ],
+                "responses": {}
+            }
+        },
+        "/user/list": {
+            "get": {
+                "tags": [
+                    "user-service"
+                ],
+                "responses": {}
+            }
+        }
+    }
+}

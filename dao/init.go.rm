@@ -1,0 +1,20 @@
+package dao
+
+import (
+	"context"
+	"fmt"
+	"gorm.io/gorm"
+)
+
+var (
+	_db *gorm.DB
+)
+
+func NewDBClient(ctx context.Context) *gorm.DB {
+	db := _db
+
+	fmt.Println(db)
+	fmt.Println(db)
+	fmt.Println(db)
+	return db.WithContext(ctx)
+}
