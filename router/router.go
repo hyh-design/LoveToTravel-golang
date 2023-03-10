@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"     // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
@@ -8,36 +9,35 @@ import (
 	"ltt-gc/api"
 	"ltt-gc/config"
 	"ltt-gc/docs"
-	"ltt-gc/service"
 )
 
 var Db *gorm.DB
 
 func NewRouter() *gin.Engine {
-
 	r := gin.Default()
 	r.Use(config.Cors())
 	//swagger
 	docs.SwaggerInfo.BasePath = ""
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	r.GET("/index", service.GetIndex)
-
-	r.GET("/init", func(context *gin.Context) {
-		config.Init()
+	r.GET("/ping", func(context *gin.Context) {
+		fmt.Println("success")
+		context.JSON(200, "success")
 	})
 
-	v1 := r.Group("/admin")
+	admin := r.Group("/admin")
 	{
-		v1.GET("/ping", func(c *gin.Context) {
-			c.JSON(200, "success")
-		})
-		v1.GET("/:email", api.GetAdminByEmail)
-		v1.GET("/list", api.GetAdminList)
-		v1.POST("", api.CreateAdmin)
-		v1.POST("/login", api.LoginAdmin)
-		v1.PUT("", api.UpdateAdmin)
-		v1.DELETE("/:id", api.DeleteAdminById)
+		admin.GET("/:email", api.GetAdminByEmail)
+		admin.GET("/list", api.GetAdminList)
+		admin.POST("", api.CreateAdmin)
+		admin.POST("/login", api.LoginAdmin)
+		admin.PUT("", api.UpdateAdmin)
+		admin.DELETE("/:id", api.DeleteAdminById)
+	}
+
+	user := r.Group("/user")
+	{
+		fmt.Println(user)
 	}
 
 	return r

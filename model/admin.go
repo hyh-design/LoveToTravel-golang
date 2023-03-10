@@ -10,10 +10,10 @@ import "gorm.io/gorm"
 
 type Admin struct {
 	gorm.Model
-	ID       string
-	Name     string
-	Email    string
-	Password string
+	ID       string `form:"id" json:"id"`
+	Name     string `form:"name" json:"name"`
+	Email    string `form:"email" json:"email"`
+	Password string `form:"password" json:"password"`
 }
 
 func (v Admin) TableName() string {

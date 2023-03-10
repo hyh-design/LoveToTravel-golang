@@ -6,8 +6,6 @@ import (
 	"ltt-gc/service"
 )
 
-//api——转化为json
-
 func GetUserByEmail(c *gin.Context) {
 	userService := service.UserService{}
 	res := userService.GetUserByEmail(c.Request.Context(), c.Param("email"))

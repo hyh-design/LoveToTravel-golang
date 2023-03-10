@@ -40,31 +40,23 @@ func LoadMysql() {
 			Colorful:      true,        //开启彩色
 		},
 	)
-
-	DB, _ = gorm.Open(mysql.Open(viper.GetString("mysql.dns")), &gorm.Config{Logger: newLogger})
-	fmt.Println(DB)
-	fmt.Println(DB)
-	fmt.Println(DB)
-
+	db, err := gorm.Open(mysql.Open(viper.GetString("mysql.dns")), &gorm.Config{Logger: newLogger})
+	if err != nil {
+		log.Fatal(err)
+	}
+	DB = db
 }
 
 func LoadMongo() *mongo.Client {
-	fmt.Println(viper.GetString("mongodb.dns"))
-	fmt.Println(viper.GetString("mongodb.dns"))
-	fmt.Println(viper.GetString("mongodb.dns"))
 	clientOptions := options.Client().ApplyURI(viper.GetString("mongo.dns"))
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// 检测连接
-	err = client.Ping(context.TODO(), nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("CONNECTED to MONGODB SUCCESSFULLY!")
-
+	//err = client.Ping(context.TODO(), nil)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 	return client
 }
 
@@ -76,4 +68,5 @@ func NewDBClient(ctx context.Context) *gorm.DB {
 func Init() {
 	LoadConfig()
 	LoadMysql()
+	LoadMongo()
 }

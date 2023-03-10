@@ -6,7 +6,7 @@ import (
 	"ltt-gc/service"
 )
 
-//api——转化为json
+//api: 转化为json; controller
 
 func GetAdminByEmail(c *gin.Context) {
 	adminService := service.AdminService{}

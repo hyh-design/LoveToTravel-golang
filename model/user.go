@@ -10,12 +10,12 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	ID       string
+	ID       string `form:"id" json:"id"`
 	Name     string
 	Email    string
 	Password string
 }
 
 func (v User) TableName() string {
-	return "admin"
+	return "user"
 }
