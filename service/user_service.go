@@ -11,10 +11,22 @@ import (
 )
 
 type UserService struct {
-	ID       string `form:"id" json:"id"`
-	Name     string `form:"name" json:"name"`
-	Email    string `form:"email" json:"email"`
-	Password string `form:"password" json:"password"`
+	ID         string
+	Name       string
+	Email      string
+	Password   string
+	Url        string
+	Grade      string
+	Experience string
+	Tele       string
+	Birthday   string
+	Post       string
+	Profession string
+	Signature  string
+	Gender     string
+	Address    string
+	Visits     string
+	Status     string
 }
 
 // GetUserByEmail
@@ -49,6 +61,10 @@ func (service *UserService) GetUserList(ctx context.Context) serializer.Response
 // @Router /user [post]
 func (service *UserService) CreateUser(ctx context.Context) serializer.Response {
 	userDao := dao.NewUserDao(ctx)
+	isExist, _ := userDao.GetUserById(service.Email)
+	if isExist.ID != "" {
+		return serializer.Error()
+	}
 	snowFlake := utils.SnowFlake{}
 	id := snowFlake.Generate()
 	user := &model.User{
@@ -84,13 +100,17 @@ func (service *UserService) Login(ctx context.Context) serializer.Response {
 // @Router /user [put]
 func (service *UserService) UpdateUser(ctx context.Context) serializer.Response {
 	userDao := dao.NewUserDao(ctx)
+	_, err := userDao.GetUserById(service.ID)
+	if err != nil {
+		return serializer.Error()
+	}
 	user := &model.User{
 		ID:       service.ID,
 		Name:     service.Name,
 		Email:    service.Email,
 		Password: service.Password,
 	}
-	err := userDao.UpdateUser(service.ID, user)
+	err = userDao.UpdateUser(service.ID, user)
 	if err != nil {
 		logging.Info(err)
 		return serializer.Error()
