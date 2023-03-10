@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/spf13/viper"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -44,6 +46,26 @@ func LoadMysql() {
 	fmt.Println(DB)
 	fmt.Println(DB)
 
+}
+
+func LoadMongo() *mongo.Client {
+	fmt.Println(viper.GetString("mongodb.dns"))
+	fmt.Println(viper.GetString("mongodb.dns"))
+	fmt.Println(viper.GetString("mongodb.dns"))
+	clientOptions := options.Client().ApplyURI(viper.GetString("mongo.dns"))
+	client, err := mongo.Connect(context.TODO(), clientOptions)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// 检测连接
+	err = client.Ping(context.TODO(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("CONNECTED to MONGODB SUCCESSFULLY!")
+
+	return client
 }
 
 func NewDBClient(ctx context.Context) *gorm.DB {

@@ -1,2 +1,4 @@
 mysql:
   dns: userservice:2x8R3WmbCzt6tcEd@tcp(47.98.138.0:3306)/userservice?charset=utf8mb4&parseTime=True&loc=Local
+mongo:
+  dns: mongodb://travelservice:W6xDFpnZb86hH7mj@47.98.138.0:27017/travelservice
