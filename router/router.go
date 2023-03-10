@@ -27,18 +27,17 @@ func NewRouter() *gin.Engine {
 		config.Init()
 	})
 
-	v1 := r.Group("/user")
+	v1 := r.Group("/admin")
 	{
 		v1.GET("/ping", func(c *gin.Context) {
 			c.JSON(200, "success")
 		})
-
-		v1.GET("/:email", api.GetUserByEmail)
-		v1.GET("/list", api.GetUserList)
-		v1.POST("", api.CreateUser)
-		v1.POST("/login", api.Login)
-		v1.PUT("", api.UpdateUser)
-		v1.DELETE("/:id", api.DeleteUserById)
+		v1.GET("/:email", api.GetAdminByEmail)
+		v1.GET("/list", api.GetAdminList)
+		v1.POST("", api.CreateAdmin)
+		v1.POST("/login", api.LoginAdmin)
+		v1.PUT("", api.UpdateAdmin)
+		v1.DELETE("/:id", api.DeleteAdminById)
 	}
 
 	return r
