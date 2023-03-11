@@ -94,6 +94,18 @@ func (service *UserService) Login(ctx context.Context) serializer.Response {
 	token, _ := utils.GenToken(service.Email)
 	return serializer.Success(token)
 }
+func (service *UserService) GetUserByToken(ctx context.Context, token string) serializer.Response {
+	// token无效会经过拦截器处理, 仅解析token即可
+	mc, _ := utils.ParseToken(token)
+	email := mc.Email
+	userDao := dao.NewUserDao(ctx)
+	user, err := userDao.GetUserByEmail(email)
+	if err != nil {
+		logging.Info(err)
+		return serializer.Error()
+	}
+	return serializer.Success(user)
+}
 
 // UpdateUser
 // @Tags user-service

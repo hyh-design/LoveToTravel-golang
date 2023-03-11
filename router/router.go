@@ -45,6 +45,7 @@ func NewRouter() *gin.Engine {
 	user := r.Group("/user", handler.JWTAuthMiddleware())
 	{
 		user.POST("/login", api.Login)
+		user.GET("/token", api.GetUserByToken)
 
 		user.GET("/:email", api.GetUserByEmail)
 		user.GET("/list", api.GetUserList)

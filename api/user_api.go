@@ -34,6 +34,13 @@ func Login(c *gin.Context) {
 	}
 }
 
+func GetUserByToken(c *gin.Context) {
+	userService := service.UserService{}
+	token := c.Request.Header.Get("Authorization")
+	res := userService.GetUserByToken(c.Request.Context(), token)
+	c.JSON(200, res)
+}
+
 func UpdateUser(c *gin.Context) {
 	userService := service.UserService{}
 	if err := c.ShouldBind(&userService); err == nil {
