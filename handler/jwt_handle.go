@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"ltt-gc/utils"
 	"net/http"
@@ -23,7 +22,6 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 			c.Abort()
 			return
 		}
-		fmt.Println(token)
 		mc, err := utils.ParseToken(token)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{

@@ -31,17 +31,26 @@ func NewRouter() *gin.Engine {
 
 	admin := r.Group("/admin")
 	{
+		admin.POST("/login", api.LoginAdmin)
+
 		admin.GET("/:email", api.GetAdminByEmail)
 		admin.GET("/list", api.GetAdminList)
 		admin.POST("", api.CreateAdmin)
-		admin.POST("/login", api.LoginAdmin)
 		admin.PUT("", api.UpdateAdmin)
 		admin.DELETE("/:id", api.DeleteAdminById)
 	}
 
-	user := r.Group("/user")
+	r.POST("/login", api.Login)
+
+	user := r.Group("/user", handler.JWTAuthMiddleware())
 	{
 		user.POST("/login", api.Login)
+
+		user.GET("/:email", api.GetUserByEmail)
+		user.GET("/list", api.GetUserList)
+		user.POST("", api.CreateUser)
+		user.PUT("", api.UpdateUser)
+		user.DELETE("/:id", api.DeleteUserById)
 	}
 
 	return r
