@@ -26,11 +26,9 @@ func LoadConfig() {
 		fmt.Println(err)
 		fmt.Println("err nil")
 	}
-	fmt.Println(viper.Get("mysql"))
 }
 
 func LoadMysql() {
-
 	//SQL日志自定义
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
@@ -47,22 +45,18 @@ func LoadMysql() {
 	DB = db
 }
 
+func NewDBClient(ctx context.Context) *gorm.DB {
+	db := DB
+	return db.WithContext(ctx)
+}
+
 func LoadMongo() *mongo.Client {
 	clientOptions := options.Client().ApplyURI(viper.GetString("mongo.dns"))
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatal(err)
 	}
-	//err = client.Ping(context.TODO(), nil)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
 	return client
-}
-
-func NewDBClient(ctx context.Context) *gorm.DB {
-	db := DB
-	return db.WithContext(ctx)
 }
 
 func Init() {

@@ -53,7 +53,6 @@ func (service *UserService) GetUserList(ctx context.Context) serializer.Response
 		return serializer.Error()
 	}
 	return serializer.Success(users)
-
 }
 
 // CreateUser

@@ -9,6 +9,8 @@ import (
 	"ltt-gc/api"
 	"ltt-gc/config"
 	"ltt-gc/docs"
+	"ltt-gc/handler"
+	"ltt-gc/utils"
 )
 
 var Db *gorm.DB
@@ -16,6 +18,13 @@ var Db *gorm.DB
 func NewRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(config.Cors())
+
+	r.GET("/home", handler.JWTAuthMiddleware(), handler.HomeHandler)
+	r.GET("/homes", func(context *gin.Context) {
+		s, _ := utils.GenToken("158158", "balala")
+		fmt.Println(s)
+	})
+
 	//swagger
 	docs.SwaggerInfo.BasePath = ""
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
