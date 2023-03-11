@@ -34,16 +34,18 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 			return
 		}
 		// 将当前请求的user信息保存到请求的上下文c上
-		c.Set("name", mc.Name)
-		c.Next() // 后续的处理函数可以用过c.Get("name")来获取当前请求的用户信息
+		c.Set("email", mc.Email)
+		c.Next()
 	}
 }
 
 func HomeHandler(c *gin.Context) {
-	name := c.MustGet("name").(string)
+	email := c.MustGet("email").(string)
 	c.JSON(http.StatusOK, gin.H{
 		"code": 1,
 		"msg":  "success",
-		"data": gin.H{"name": name},
+		"data": gin.H{
+			"email": email,
+		},
 	})
 }

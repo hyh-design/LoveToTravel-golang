@@ -10,7 +10,6 @@ import (
 	"ltt-gc/config"
 	"ltt-gc/docs"
 	"ltt-gc/handler"
-	"ltt-gc/utils"
 )
 
 var Db *gorm.DB
@@ -20,10 +19,6 @@ func NewRouter() *gin.Engine {
 	r.Use(config.Cors())
 
 	r.GET("/home", handler.JWTAuthMiddleware(), handler.HomeHandler)
-	r.GET("/homes", func(context *gin.Context) {
-		s, _ := utils.GenToken("158158", "balala")
-		fmt.Println(s)
-	})
 
 	//swagger
 	docs.SwaggerInfo.BasePath = ""
@@ -46,7 +41,7 @@ func NewRouter() *gin.Engine {
 
 	user := r.Group("/user")
 	{
-		fmt.Println(user)
+		user.POST("/login", api.Login)
 	}
 
 	return r

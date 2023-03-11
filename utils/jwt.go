@@ -11,16 +11,14 @@ import (
 // MyClaims 自定义声明结构体并内嵌jwt.StandardClaims
 // 想要保存更多信息都可以添加到这个结构体中
 type MyClaims struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	Email string
 	jwt.StandardClaims
 }
 
 // GenToken 生成JWT
-func GenToken(ID string, Name string) (string, error) {
+func GenToken(Email string) (string, error) {
 	c := MyClaims{
-		ID,
-		Name,
+		Email,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(
 				time.Duration(viper.GetInt("auth.jwt.expire")) * time.Hour).Unix(),
@@ -44,8 +42,8 @@ func ParseToken(tokenString string) (*MyClaims, error) {
 		fmt.Println(err)
 		return nil, err
 	}
-	// 令牌有效
-	if claims, ok := token.Claims.(*MyClaims); ok && token.Valid { // 校验token
+	// 令牌有效, 校验token
+	if claims, ok := token.Claims.(*MyClaims); ok && token.Valid {
 		fmt.Println("token checked!")
 		return claims, nil
 	}

@@ -91,7 +91,8 @@ func (service *UserService) Login(ctx context.Context) serializer.Response {
 		logging.Info(err)
 		return serializer.Error()
 	}
-	return serializer.Success(user)
+	token, _ := utils.GenToken(service.Email)
+	return serializer.Success(token)
 }
 
 // UpdateUser
