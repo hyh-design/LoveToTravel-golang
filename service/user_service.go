@@ -25,7 +25,7 @@ type UserService struct {
 	Signature  string
 	Gender     string
 	Address    string
-	Visits     string
+	Visits     int64
 	Status     string
 }
 
@@ -37,7 +37,7 @@ func (service *UserService) GetUserByEmail(ctx context.Context, email string) se
 	user, err := userDao.GetUserByEmail(email)
 	if err != nil {
 		logging.Info(err)
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(user)
 }
@@ -50,7 +50,7 @@ func (service *UserService) GetUserList(ctx context.Context) serializer.Response
 	users, err := userDao.GetUserList()
 	if err != nil {
 		logging.Info(err)
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(users)
 }
@@ -62,7 +62,7 @@ func (service *UserService) CreateUser(ctx context.Context) serializer.Response 
 	userDao := dao.NewUserDao(ctx)
 	isExist, _ := userDao.GetUserById(service.Email)
 	if isExist.ID != "" {
-		return serializer.Error()
+		return serializer.Error(serializer.UserAlreadyExist)
 	}
 	snowFlake := utils.SnowFlake{}
 	id := snowFlake.Generate()
@@ -70,12 +70,12 @@ func (service *UserService) CreateUser(ctx context.Context) serializer.Response 
 		ID:       strconv.FormatInt(id, 10),
 		Name:     service.Name,
 		Email:    service.Email,
-		Password: service.Password,
+		Password: utils.GetMD5(service.Password),
 	}
 	err := userDao.CreateUser(user)
 	if err != nil {
 		logging.Info(err)
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(user)
 }
@@ -84,12 +84,12 @@ func (service *UserService) Login(ctx context.Context) serializer.Response {
 	userDao := dao.NewUserDao(ctx)
 	user := &model.User{
 		Email:    service.Email,
-		Password: service.Password,
+		Password: utils.GetMD5(service.Password),
 	}
 	err := userDao.Login(user)
 	if err != nil {
 		logging.Info(err)
-		return serializer.Error()
+		return serializer.Error(serializer.AccountError)
 	}
 	token, _ := utils.GenToken(service.Email)
 	return serializer.Success(token)
@@ -102,7 +102,7 @@ func (service *UserService) GetUserByToken(ctx context.Context, token string) se
 	user, err := userDao.GetUserByEmail(email)
 	if err != nil {
 		logging.Info(err)
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(user)
 }
@@ -114,18 +114,43 @@ func (service *UserService) UpdateUser(ctx context.Context) serializer.Response 
 	userDao := dao.NewUserDao(ctx)
 	_, err := userDao.GetUserById(service.ID)
 	if err != nil {
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
 	}
 	user := &model.User{
-		ID:       service.ID,
-		Name:     service.Name,
-		Email:    service.Email,
-		Password: service.Password,
+		Name:       service.Name,
+		Url:        service.Url,
+		Tele:       service.Tele,
+		Birthday:   service.Birthday,
+		Post:       service.Post,
+		Profession: service.Profession,
+		Signature:  service.Signature,
+		Gender:     service.Gender,
+		Address:    service.Address,
 	}
 	err = userDao.UpdateUser(service.ID, user)
 	if err != nil {
 		logging.Info(err)
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
+	}
+	return serializer.Success(user)
+}
+
+// UpdateUser
+// @Tags user-service
+// @Router /user [put]
+func (service *UserService) UpdateUserPass(ctx context.Context) serializer.Response {
+	userDao := dao.NewUserDao(ctx)
+	_, err := userDao.GetUserById(service.ID)
+	if err != nil {
+		return serializer.Error(serializer.ServerError)
+	}
+	user := &model.User{
+		Password: utils.GetMD5(service.Password),
+	}
+	err = userDao.UpdateUser(service.ID, user)
+	if err != nil {
+		logging.Info(err)
+		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(user)
 }
@@ -138,7 +163,7 @@ func (service *UserService) DeleteUserById(ctx context.Context, id string) seria
 	err := userDao.DeleteUserById(id)
 	if err != nil {
 		logging.Info(err)
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(nil)
 }

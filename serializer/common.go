@@ -45,9 +45,9 @@ func Success(item interface{}) Response {
 	}
 }
 
-func Error() Response {
+func Error(msg string) Response {
 	return Response{
 		Code: 1,
-		Msg:  "error",
+		Msg:  msg,
 	}
 }

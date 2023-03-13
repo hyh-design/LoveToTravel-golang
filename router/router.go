@@ -40,16 +40,22 @@ func NewRouter() *gin.Engine {
 		admin.DELETE("/:id", api.DeleteAdminById)
 	}
 
+	/**
+	TODO
+	md5加密-随机数-hash加密
+	更改密码
+	更改个人信息
+	分页查询
+	*/
+
 	r.POST("/login", api.Login)
+	r.POST("/register", api.CreateUser)
 
 	user := r.Group("/user", handler.JWTAuthMiddleware())
 	{
-		user.POST("/login", api.Login)
 		user.GET("/token", api.GetUserByToken)
-
 		user.GET("/:email", api.GetUserByEmail)
 		user.GET("/list", api.GetUserList)
-		user.POST("", api.CreateUser)
 		user.PUT("", api.UpdateUser)
 		user.DELETE("/:id", api.DeleteUserById)
 	}

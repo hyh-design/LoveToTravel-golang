@@ -25,7 +25,7 @@ func (service *AdminService) GetAdminByEmail(ctx context.Context, email string) 
 	admin, err := adminDao.GetAdminByEmail(email)
 	if err != nil {
 		logging.Info(err)
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(admin)
 }
@@ -38,7 +38,7 @@ func (service *AdminService) GetAdminList(ctx context.Context) serializer.Respon
 	admins, err := adminDao.GetAdminList()
 	if err != nil {
 		logging.Info(err)
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(admins)
 }
@@ -50,7 +50,7 @@ func (service *AdminService) CreateAdmin(ctx context.Context) serializer.Respons
 	adminDao := dao.NewAdminDao(ctx)
 	isExist, _ := adminDao.GetAdminByEmail(service.Email)
 	if isExist.ID != "" {
-		return serializer.Error()
+		return serializer.Error(serializer.UserAlreadyExist)
 	}
 	snowFlake := utils.SnowFlake{}
 	id := snowFlake.Generate()
@@ -63,7 +63,7 @@ func (service *AdminService) CreateAdmin(ctx context.Context) serializer.Respons
 	err := adminDao.CreateAdmin(admin)
 	if err != nil {
 		logging.Info(err)
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(admin)
 }
@@ -77,7 +77,7 @@ func (service *AdminService) Login(ctx context.Context) serializer.Response {
 	err := adminDao.Login(admin)
 	if err != nil {
 		logging.Info(err)
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(admin)
 }
@@ -89,7 +89,7 @@ func (service *AdminService) UpdateAdmin(ctx context.Context) serializer.Respons
 	adminDao := dao.NewAdminDao(ctx)
 	_, err := adminDao.GetAdminById(service.ID)
 	if err != nil {
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
 	}
 	admin := &model.Admin{
 		ID:       service.ID,
@@ -100,7 +100,7 @@ func (service *AdminService) UpdateAdmin(ctx context.Context) serializer.Respons
 	err = adminDao.UpdateAdmin(service.ID, admin)
 	if err != nil {
 		logging.Info(err)
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(admin)
 }
@@ -113,7 +113,7 @@ func (service *AdminService) DeleteAdminById(ctx context.Context, id string) ser
 	err := adminDao.DeleteAdminById(id)
 	if err != nil {
 		logging.Info(err)
-		return serializer.Error()
+		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(nil)
 }

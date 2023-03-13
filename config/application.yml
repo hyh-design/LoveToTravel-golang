@@ -7,6 +7,6 @@ mongo:
 auth:
   jwt:
     secret: "ltt"
-    expire: 1
+    expire: 7
     issuer: "ltt"
 
