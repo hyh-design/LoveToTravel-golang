@@ -44,33 +44,48 @@ func NewRouter() *gin.Engine {
 	TODO
 	更改密码
 	更改个人信息
-	分页查询
 	*/
 
 	r.POST("/login", api.Login)
 	r.POST("/register", api.CreateUser)
 
-	user := r.Group("/user", handler.JWTAuthMiddleware())
+	//user := r.Group("/user", handler.JWTAuthMiddleware())
+	user := r.Group("/user")
 	{
 		user.GET("/token", api.GetUserByToken)
 		user.GET("/:email", api.GetUserByEmail)
 		user.GET("/list", api.GetUserList)
 		user.PUT("", api.UpdateUser)
 		user.DELETE("/:id", api.DeleteUserById)
+		user.POST("/page", api.GetUserPage)
+		user.POST("/page/query", api.GetUserPageFuzzy)
 	}
 
 	city := r.Group("/city")
 	{
 		city.GET("", api.GetCityList)
 		city.GET("/:id", api.GetCityById)
-		city.GET("name/:name", api.GetCityByName)
+		city.GET("/name/:name", api.GetCityByName)
+		city.POST("/page", api.GetCityPage)
+		city.POST("/page/query", api.GetCityPageFuzzy)
 	}
 
 	province := r.Group("/province")
 	{
 		province.GET("", api.GetProvinceList)
 		province.GET("/:id", api.GetProvinceById)
-		province.GET("name/:name", api.GetProvinceByName)
+		province.GET("/name/:name", api.GetProvinceByName)
+		province.POST("/page", api.GetProvincePage)
+		province.POST("/page/query", api.GetProvincePageFuzzy)
+	}
+
+	scenery := r.Group("/scenery")
+	{
+		scenery.GET("", api.GetSceneryList)
+		scenery.GET("/:id", api.GetSceneryById)
+		scenery.GET("/name/:name", api.GetSceneryByName)
+		scenery.POST("/page", api.GetSceneryPage)
+		scenery.POST("/page/query", api.GetSceneryPageFuzzy)
 	}
 
 	return r

@@ -5,6 +5,7 @@ import (
 	logging "github.com/sirupsen/logrus"
 	"ltt-gc/dao"
 	"ltt-gc/model"
+	"ltt-gc/model/vo"
 	"ltt-gc/serializer"
 	"ltt-gc/utils"
 	"strconv"
@@ -53,6 +54,38 @@ func (service *UserService) GetUserList(ctx context.Context) serializer.Response
 		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(users)
+}
+
+func (service *UserService) GetUserPage(ctx context.Context, p vo.Page) serializer.Response {
+	userDao := dao.NewUserDao(ctx)
+	users, err := userDao.GetUserPage(p)
+	if err != nil {
+		logging.Info(err)
+		return serializer.Error(serializer.ServerError)
+	}
+	p.Total, _ = userDao.Count()
+	p.PageSum = p.Total / p.PageSize
+	if p.Total%p.PageSize != 0 {
+		p.PageNum++
+	}
+	p.Records = users
+	return serializer.Success(p)
+}
+
+func (service *UserService) GetUserPageFuzzy(ctx context.Context, p vo.Page) serializer.Response {
+	userDao := dao.NewUserDao(ctx)
+	users, err := userDao.GetUserPageFuzzy(p)
+	if err != nil {
+		logging.Info(err)
+		return serializer.Error(serializer.ServerError)
+	}
+	p.Total, _ = userDao.Count()
+	p.PageSum = p.Total / p.PageSize
+	if p.Total%p.PageSize != 0 {
+		p.PageNum++
+	}
+	p.Records = users
+	return serializer.Success(p)
 }
 
 // CreateUser

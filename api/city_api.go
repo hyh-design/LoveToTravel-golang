@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"ltt-gc/model/vo"
 	"ltt-gc/service"
 )
 
@@ -21,4 +22,22 @@ func GetCityList(c *gin.Context) {
 	cityService := service.CityService{}
 	res := cityService.GetCityList(c.Request.Context())
 	c.JSON(200, res)
+}
+
+func GetCityPage(c *gin.Context) {
+	cityService := service.CityService{}
+	p := vo.Page{}
+	if err := c.ShouldBind(&p); err == nil {
+		res := cityService.GetCityPage(c.Request.Context(), p)
+		c.JSON(200, res)
+	}
+}
+
+func GetCityPageFuzzy(c *gin.Context) {
+	cityService := service.CityService{}
+	p := vo.Page{}
+	if err := c.ShouldBind(&p); err == nil {
+		res := cityService.GetCityPageFuzzy(c.Request.Context(), p)
+		c.JSON(200, res)
+	}
 }

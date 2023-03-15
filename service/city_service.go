@@ -4,6 +4,7 @@ import (
 	"context"
 	logging "github.com/sirupsen/logrus"
 	"ltt-gc/dao"
+	"ltt-gc/model/vo"
 	"ltt-gc/serializer"
 )
 
@@ -45,4 +46,36 @@ func (service *CityService) GetCityList(ctx context.Context) serializer.Response
 		return serializer.Error(serializer.ServerError)
 	}
 	return serializer.Success(cities)
+}
+
+func (service *CityService) GetCityPage(ctx context.Context, p vo.Page) serializer.Response {
+	cityDao := dao.NewCityDao(ctx)
+	cities, err := cityDao.GetCityPage(p)
+	if err != nil {
+		logging.Info(err)
+		return serializer.Error(serializer.ServerError)
+	}
+	p.Total, _ = cityDao.Count()
+	p.PageSum = p.Total / p.PageSize
+	if p.Total%p.PageSize != 0 {
+		p.PageNum++
+	}
+	p.Records = cities
+	return serializer.Success(p)
+}
+
+func (service *CityService) GetCityPageFuzzy(ctx context.Context, p vo.Page) serializer.Response {
+	cityDao := dao.NewCityDao(ctx)
+	cities, err := cityDao.GetCityPageFuzzy(p)
+	if err != nil {
+		logging.Info(err)
+		return serializer.Error(serializer.ServerError)
+	}
+	p.Total, _ = cityDao.Count()
+	p.PageSum = p.Total / p.PageSize
+	if p.Total%p.PageSize != 0 {
+		p.PageNum++
+	}
+	p.Records = cities
+	return serializer.Success(p)
 }

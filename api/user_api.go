@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"ltt-gc/model/vo"
 	"ltt-gc/service"
 )
 
@@ -39,6 +40,24 @@ func GetUserByToken(c *gin.Context) {
 	token := c.Request.Header.Get("Authorization")
 	res := userService.GetUserByToken(c.Request.Context(), token)
 	c.JSON(200, res)
+}
+
+func GetUserPage(c *gin.Context) {
+	userService := service.UserService{}
+	p := vo.Page{}
+	if err := c.ShouldBind(&p); err == nil {
+		res := userService.GetUserPage(c.Request.Context(), p)
+		c.JSON(200, res)
+	}
+}
+
+func GetUserPageFuzzy(c *gin.Context) {
+	userService := service.UserService{}
+	p := vo.Page{}
+	if err := c.ShouldBind(&p); err == nil {
+		res := userService.GetUserPageFuzzy(c.Request.Context(), p)
+		c.JSON(200, res)
+	}
 }
 
 func UpdateUser(c *gin.Context) {
