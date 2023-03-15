@@ -42,7 +42,6 @@ func NewRouter() *gin.Engine {
 
 	/**
 	TODO
-	md5加密-随机数-hash加密
 	更改密码
 	更改个人信息
 	分页查询
@@ -58,6 +57,20 @@ func NewRouter() *gin.Engine {
 		user.GET("/list", api.GetUserList)
 		user.PUT("", api.UpdateUser)
 		user.DELETE("/:id", api.DeleteUserById)
+	}
+
+	city := r.Group("/city")
+	{
+		city.GET("", api.GetCityList)
+		city.GET("/:id", api.GetCityById)
+		city.GET("name/:name", api.GetCityByName)
+	}
+
+	province := r.Group("/province")
+	{
+		province.GET("", api.GetProvinceList)
+		province.GET("/:id", api.GetProvinceById)
+		province.GET("name/:name", api.GetProvinceByName)
 	}
 
 	return r
