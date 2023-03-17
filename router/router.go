@@ -88,5 +88,13 @@ func NewRouter() *gin.Engine {
 		scenery.POST("/page/query", api.GetSceneryPageFuzzy)
 	}
 
+	note := r.Group("/note")
+	{
+		note.GET("/:id", api.GetNoteById)
+		note.GET("/", api.GetNoteList)
+		note.POST("/page", api.GetNotePage)
+		note.POST("/page/query", api.GetNotePageFuzzy)
+	}
+
 	return r
 }

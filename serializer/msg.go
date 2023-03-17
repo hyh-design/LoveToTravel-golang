@@ -10,3 +10,7 @@ const AccountError = "The account or password is incorrect"
 // city相关
 const CityNotExist = "city not exist"
 const CityAlreadyExist = "city already exist"
+
+// note相关
+const NoteNotExist = "note not exist"
+const NoteAlreadyExist = "note already exist"

@@ -15,7 +15,8 @@ import (
 )
 
 var (
-	DB *gorm.DB
+	DB     *gorm.DB
+	Client *mongo.Client
 )
 
 func LoadConfig() {
@@ -50,13 +51,17 @@ func NewDBClient(ctx context.Context) *gorm.DB {
 	return db.WithContext(ctx)
 }
 
-func LoadMongo() *mongo.Client {
+func LoadMongo() {
 	clientOptions := options.Client().ApplyURI(viper.GetString("mongo.dns"))
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return client
+	Client = client
+}
+
+func NewMongoClient() *mongo.Client {
+	return Client
 }
 
 func Init() {
