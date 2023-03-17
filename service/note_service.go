@@ -5,34 +5,49 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"ltt-gc/config"
-	"ltt-gc/model"
 	"ltt-gc/model/vo"
 	"ltt-gc/serializer"
+	"sync"
 	"time"
 )
 
 type NoteService struct {
-	ID         string
-	UserId     string
-	UserName   string
-	Title      string
-	PlanId     string
-	Url        string
-	Content    string
-	Comment    interface{}
-	View       interface{}
-	Star       interface{}
-	Trip       interface{}
-	Deleted    string
-	CreateTime string
-	UpdateTime string
+	ID         primitive.ObjectID `bson:"_id,omitempty"`
+	UserId     string             `bson:"userId,omitempty"`
+	UserName   string             `bson:"userName,omitempty"`
+	Title      string             `bson:"title,omitempty"`
+	PlanId     string             `bson:"planId,omitempty"`
+	Url        string             `bson:"url,omitempty"`
+	Content    string             `bson:"content,omitempty"`
+	Comment    interface{}        `bson:"comment,omitempty"`
+	View       interface{}        `bson:"view,omitempty"`
+	Star       interface{}        `bson:"star,omitempty"`
+	Trip       interface{}        `bson:"trip,omitempty"`
+	Deleted    string             `bson:"deleted,omitempty"`
+	CreateTime string             `bson:"createTime,omitempty"`
+	UpdateTime string             `bson:"updateTime,omitempty"`
+}
+
+var (
+	noteCollection *mongo.Collection
+	once           sync.Once
+)
+
+// GetNoteCollection 获取note操作集合
+func GetNoteCollection() *mongo.Collection {
+	once.Do(func() {
+		client := config.NewMongoClient()
+		defer client.Disconnect(context.Background())
+		noteCollection = client.Database("travelservice").Collection("note")
+	})
+	return noteCollection
 }
 
 func (service *NoteService) GetNoteById(id string) serializer.Response {
-	client := config.NewMongoClient()
-	noteCollection := client.Database("travelservice").Collection("note")
+	noteCollection = GetNoteCollection()
 	// 新版ObjectId转换方法
 	objectId, _ := primitive.ObjectIDFromHex(id)
 	filter := bson.D{{Key: "_id", Value: objectId}, {Key: "deleted", Value: "0"}}
@@ -48,10 +63,9 @@ func (service *NoteService) GetNoteById(id string) serializer.Response {
 
 // 数据量多时不建议使用
 func (service *NoteService) GetNoteList() serializer.Response {
-	client := config.NewMongoClient()
-	noteCollection := client.Database("travelservice").Collection("note")
+	noteCollection = GetNoteCollection()
 	filter := bson.D{{Key: "deleted", Value: "0"}}
-	var result []*model.Note
+	var result []map[string]interface{}
 	cur, err := noteCollection.Find(context.TODO(), filter)
 	if err != nil {
 		return serializer.Success(serializer.ServerError)
@@ -63,8 +77,7 @@ func (service *NoteService) GetNoteList() serializer.Response {
 }
 
 func (service *NoteService) GetNotePage(p vo.Page) serializer.Response {
-	client := config.NewMongoClient()
-	noteCollection := client.Database("travelservice").Collection("note")
+	noteCollection = GetNoteCollection()
 	filter := bson.D{{Key: "deleted", Value: "0"}}
 	var findOptions *options.FindOptions = &options.FindOptions{}
 
@@ -93,17 +106,13 @@ func (service *NoteService) GetNotePage(p vo.Page) serializer.Response {
 }
 
 func (service *NoteService) GetNotePageFuzzy(p vo.Page) serializer.Response {
-	client := config.NewMongoClient()
-	noteCollection := client.Database("travelservice").Collection("note")
+	noteCollection = GetNoteCollection()
 	filter := bson.M{
 		"content": primitive.Regex{
 			Pattern: p.QueryStr,
 			Options: "i",
 		},
-		"deleted": primitive.Regex{
-			Pattern: "0",
-			Options: "i",
-		},
+		"deleted": "0",
 	}
 	var findOptions *options.FindOptions = &options.FindOptions{}
 
@@ -132,9 +141,9 @@ func (service *NoteService) GetNotePageFuzzy(p vo.Page) serializer.Response {
 }
 
 func (service *NoteService) CreateNote() serializer.Response {
-	client := config.NewMongoClient()
-	noteCollection := client.Database("travelservice").Collection("note")
-	note := model.Note{
+	noteCollection = GetNoteCollection()
+	note := NoteService{
+		ID:         primitive.NewObjectID(),
 		UserId:     service.UserId,
 		UserName:   service.UserName,
 		Title:      service.Title,
@@ -151,6 +160,7 @@ func (service *NoteService) CreateNote() serializer.Response {
 	}
 	objId, err := noteCollection.InsertOne(context.TODO(), note)
 	if err != nil {
+		fmt.Println(err)
 		return serializer.Success(serializer.ServerError)
 	}
 	return serializer.Success(objId.InsertedID)
@@ -158,9 +168,8 @@ func (service *NoteService) CreateNote() serializer.Response {
 
 // 需要传入完整数据
 func (service *NoteService) UpdateNote() serializer.Response {
-	client := config.NewMongoClient()
-	noteCollection := client.Database("travelservice").Collection("note")
-	objectId, _ := primitive.ObjectIDFromHex(service.ID)
+	noteCollection = GetNoteCollection()
+	objectId := service.ID
 	fmt.Println(objectId)
 	filter := bson.D{{Key: "_id", Value: objectId}, {Key: "deleted", Value: "0"}}
 
@@ -183,8 +192,7 @@ func (service *NoteService) UpdateNote() serializer.Response {
 }
 
 func (service *NoteService) DeleteNoteById(id string) serializer.Response {
-	client := config.NewMongoClient()
-	noteCollection := client.Database("travelservice").Collection("note")
+	noteCollection = GetNoteCollection()
 	objectId, _ := primitive.ObjectIDFromHex(id)
 	filter := bson.D{{Key: "_id", Value: objectId}, {Key: "deleted", Value: "0"}}
 	update := bson.D{
