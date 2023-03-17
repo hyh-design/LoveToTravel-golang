@@ -35,3 +35,25 @@ func GetNotePageFuzzy(c *gin.Context) {
 		c.JSON(200, res)
 	}
 }
+
+func CreateNote(c *gin.Context) {
+	noteService := service.NoteService{}
+	if err := c.ShouldBind(&noteService); err == nil {
+		res := noteService.CreateNote()
+		c.JSON(200, res)
+	}
+}
+
+func UpdateNote(c *gin.Context) {
+	noteService := service.NoteService{}
+	if err := c.ShouldBind(&noteService); err == nil {
+		res := noteService.UpdateNote()
+		c.JSON(200, res)
+	}
+}
+
+func DeleteNoteById(c *gin.Context) {
+	noteService := service.NoteService{}
+	res := noteService.DeleteNoteById(c.Param("id"))
+	c.JSON(200, res)
+}

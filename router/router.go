@@ -94,6 +94,9 @@ func NewRouter() *gin.Engine {
 		note.GET("/", api.GetNoteList)
 		note.POST("/page", api.GetNotePage)
 		note.POST("/page/query", api.GetNotePageFuzzy)
+		note.POST("/", api.CreateNote)
+		note.PUT("/", api.UpdateNote)
+		note.DELETE("/:id", api.DeleteNoteById)
 	}
 
 	return r

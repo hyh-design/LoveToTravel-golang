@@ -1,20 +1,17 @@
 package model
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
-
 type Note struct {
-	Id         primitive.ObjectID `form:"_id" json:"_id"`
-	UserId     string             `form:"userId" json:"userId"`
-	UserName   string             `form:"userName" json:"userName"`
-	Title      string             `form:"title" json:"title"`
-	PlanId     string             `form:"planId" json:"planId"`
-	Url        string             `form:"url" json:"url"`
-	Content    string             `form:"content" json:"content"`
-	Comment    interface{}        `form:"comment" json:"comment"`
-	View       interface{}        `form:"view" json:"view"`
-	Star       interface{}        `form:"star" json:"star"`
-	Trip       interface{}        `form:"trip" json:"trip"`
-	Deleted    string             `form:"deleted" json:"deleted"`
-	CreateTime string             `form:"createTime" json:"createTime"`
-	UpdateTime string             `form:"updateTime" json:"updateTime"`
+	UserId     string      `form:"userId" bson:"userId"`
+	UserName   string      `form:"userName" bson:"userName"`
+	Title      string      `form:"title" bson:"title"`
+	PlanId     string      `form:"planId" bson:"planId"`
+	Url        string      `form:"url" bson:"url"`
+	Content    string      `form:"content" bson:"content"`
+	Comment    interface{} `form:"comment" bson:"comment"`
+	View       interface{} `form:"view" bson:"view"`
+	Star       interface{} `form:"star" bson:"star"`
+	Trip       interface{} `form:"trip" bson:"trip"`
+	Deleted    string      `form:"deleted" bson:"deleted"`
+	CreateTime string      `form:"createTime" bson:"createTime"`
+	UpdateTime string      `form:"updateTime" bson:"updateTime"`
 }
