@@ -31,13 +31,12 @@ type Note struct {
 }
 
 var (
-	client         *mongo.Client
 	noteCollection *mongo.Collection
 )
 
 // GetNoteCollection 获取note操作集合
 func GetNoteCollection() (*mongo.Collection, error) {
-	client = config.NewMongoClient()
+	client := config.NewMongoClient()
 	noteCollection = client.Database("travelservice").Collection("chat")
 	return noteCollection, nil
 }
