@@ -13,42 +13,55 @@ import (
 	"time"
 )
 
-type Note struct {
+type Plan struct {
 	ID         primitive.ObjectID `bson:"_id,omitempty"`
-	UserId     string             `json:"user_id,omitempty" bson:"userId,omitempty"`
-	UserName   string             `json:"user_name,omitempty" bson:"userName,omitempty"`
-	Title      string             `json:"title,omitempty" bson:"title,omitempty"`
-	PlanId     string             `json:"plan_id,omitempty" bson:"planId,omitempty"`
-	Url        string             `json:"url,omitempty" bson:"url,omitempty"`
-	Content    string             `json:"content,omitempty" bson:"content,omitempty"`
-	Comment    interface{}        `json:"comment,omitempty" bson:"comment,omitempty"`
-	View       interface{}        `json:"view,omitempty" bson:"view,omitempty"`
-	Star       interface{}        `json:"star,omitempty" bson:"star,omitempty"`
-	Trip       interface{}        `json:"trip,omitempty" bson:"trip,omitempty"`
+	UserId     string             `json:"userId,omitempty" bson:"userId,omitempty"`
+	Budget     string             `json:"budget,omitempty" bson:"budget,omitempty"`
+	Depart     string             `json:"depart,omitempty" bson:"depart,omitempty"`
+	Start      string             `json:"start,omitempty" bson:"start,omitempty"`
+	End        string             `json:"end,omitempty" bson:"end,omitempty"`
+	SubPlans   []SubPlan          `json:"subPlans,omitempty" bson:"subPlans,omitempty"`
 	Deleted    string             `json:"deleted,omitempty" bson:"deleted,omitempty"`
-	CreateTime string             `json:"create_time,omitempty" bson:"createTime,omitempty"`
-	UpdateTime string             `json:"update_time,omitempty" bson:"updateTime,omitempty"`
+	CreateTime string             `json:"createTime,omitempty" bson:"createTime,omitempty"`
+	UpdateTime string             `json:"updateTime,omitempty" bson:"updateTime,omitempty"`
+}
+
+type SubPlan struct {
+	CityId    string `json:"cityId,omitempty" bson:"cityId,omitempty"`
+	City      string `json:"city,omitempty" bson:"city,omitempty"`
+	Budget    string `json:"budget,omitempty" bson:"budget,omitempty"`
+	Days      []Days `json:"days,omitempty" bson:"days,omitempty"`
+	DayLength int    `json:"dayLength,omitempty" bson:"dayLength,omitempty"`
+}
+
+type Days struct {
+	Route []Route `json:"route,omitempty" bson:"route,omitempty"`
+}
+
+type Route struct {
+	Origin     []float32 `json:"origin,omitempty" bson:"origin,omitempty"`
+	OriginName string    `json:"originName,omitempty" bson:"originName,omitempty"`
+	DepartTime int       `json:"departTime,omitempty" bson:"departTime,omitempty"`
+	Vehicle    string    `json:"vehicle,omitempty" bson:"vehicle,omitempty"`
 }
 
 var (
-	noteCollection *mongo.Collection
+	planCollection *mongo.Collection
 )
 
-// GetNoteCollection 获取note操作集合
-func GetNoteCollection() (*mongo.Collection, error) {
+func GetPlanCollection() (*mongo.Collection, error) {
 	client := config.NewMongoClient()
-	noteCollection = client.Database("travelservice").Collection("chat")
-	return noteCollection, nil
+	planCollection = client.Database("travelservice").Collection("chat")
+	return planCollection, nil
 }
 
-func (service *Note) GetNoteById(id string) serializer.Response {
-	noteCollection, _ = GetNoteCollection()
+func (service *Plan) GetPlanById(id string) serializer.Response {
+	planCollection, _ = GetPlanCollection()
 
-	// 新版ObjectId转换方法
 	objectId, _ := primitive.ObjectIDFromHex(id)
 	filter := bson.D{{Key: "_id", Value: objectId}, {Key: "deleted", Value: "0"}}
 	var result map[string]interface{}
-	err := noteCollection.FindOne(context.TODO(), filter).Decode(&result)
+	err := planCollection.FindOne(context.TODO(), filter).Decode(&result)
 	result["id"] = result["_id"]
 	delete(result, "_id")
 	if err != nil {
@@ -57,13 +70,12 @@ func (service *Note) GetNoteById(id string) serializer.Response {
 	return serializer.Success(result)
 }
 
-// 数据量多时不建议使用
-func (service *Note) GetNoteList() serializer.Response {
-	noteCollection, _ = GetNoteCollection()
+func (service *Plan) GetPlanList() serializer.Response {
+	planCollection, _ = GetPlanCollection()
 
 	filter := bson.D{{Key: "deleted", Value: "0"}}
 	var result []map[string]interface{}
-	cur, err := noteCollection.Find(context.TODO(), filter)
+	cur, err := planCollection.Find(context.Background(), filter)
 	if err != nil {
 		return serializer.Success(err.Error())
 	}
@@ -73,8 +85,8 @@ func (service *Note) GetNoteList() serializer.Response {
 	return serializer.Success(result)
 }
 
-func (service *Note) GetNotePage(p vo.Page) serializer.Response {
-	noteCollection, _ = GetNoteCollection()
+func (service *Plan) GetPlanPage(p vo.Page) serializer.Response {
+	planCollection, _ = GetPlanCollection()
 
 	filter := bson.D{{Key: "deleted", Value: "0"}}
 	var findOptions *options.FindOptions = &options.FindOptions{}
@@ -87,7 +99,7 @@ func (service *Note) GetNotePage(p vo.Page) serializer.Response {
 		findOptions.SetSkip(skip)
 	}
 	var result []map[string]interface{}
-	cur, err := noteCollection.Find(context.TODO(), filter, findOptions)
+	cur, err := planCollection.Find(context.TODO(), filter, findOptions)
 	if err != nil {
 		return serializer.Success(err.Error())
 	}
@@ -103,8 +115,8 @@ func (service *Note) GetNotePage(p vo.Page) serializer.Response {
 	return serializer.Success(result)
 }
 
-func (service *Note) GetNotePageFuzzy(p vo.Page) serializer.Response {
-	noteCollection, _ = GetNoteCollection()
+func (service *Plan) GetPlanPageFuzzy(p vo.Page) serializer.Response {
+	planCollection, _ = GetPlanCollection()
 
 	filter := bson.M{
 		"content": primitive.Regex{
@@ -123,7 +135,7 @@ func (service *Note) GetNotePageFuzzy(p vo.Page) serializer.Response {
 		findOptions.SetSkip(skip)
 	}
 	var result []map[string]interface{}
-	cur, err := noteCollection.Find(context.TODO(), filter, findOptions)
+	cur, err := planCollection.Find(context.TODO(), filter, findOptions)
 	if err != nil {
 		return serializer.Success(err.Error())
 	}
@@ -139,36 +151,30 @@ func (service *Note) GetNotePageFuzzy(p vo.Page) serializer.Response {
 	return serializer.Success(result)
 }
 
-func (service *Note) CreateNote() serializer.Response {
-	noteCollection, _ = GetNoteCollection()
+func (service *Plan) CreatePlan() serializer.Response {
+	planCollection, _ = GetPlanCollection()
 
-	note := Note{
+	plan := Plan{
 		ID:         primitive.NewObjectID(),
 		UserId:     service.UserId,
-		UserName:   service.UserName,
-		Title:      service.Title,
-		PlanId:     service.PlanId,
-		Url:        service.Url,
-		Content:    service.Content,
-		Comment:    0,
-		View:       0,
-		Star:       0,
-		Trip:       service.Trip,
+		Budget:     service.Budget,
+		Depart:     service.Depart,
+		Start:      service.Start,
+		End:        service.End,
+		SubPlans:   service.SubPlans,
 		Deleted:    "0",
 		CreateTime: time.Now().String(),
 		UpdateTime: time.Now().String(),
 	}
-	objId, err := noteCollection.InsertOne(context.TODO(), note)
+	objId, err := planCollection.InsertOne(context.TODO(), plan)
 	if err != nil {
-		fmt.Println(err)
 		return serializer.Success(err.Error())
 	}
 	return serializer.Success(objId.InsertedID)
 }
 
-// 需要传入完整数据
-func (service *Note) UpdateNote() serializer.Response {
-	noteCollection, _ = GetNoteCollection()
+func (service *Plan) UpdatePlan() serializer.Response {
+	planCollection, _ = GetPlanCollection()
 
 	objectId := service.ID
 	fmt.Println(objectId)
@@ -176,24 +182,24 @@ func (service *Note) UpdateNote() serializer.Response {
 
 	update := bson.D{
 		{Key: "$set", Value: bson.D{
-			{Key: "userName", Value: service.UserName},
-			{Key: "title", Value: service.Title},
-			{Key: "planId", Value: service.PlanId},
-			{Key: "url", Value: service.Url},
-			{Key: "content", Value: service.Content},
-			{Key: "trip", Value: service.Trip},
+			{Key: "userId", Value: service.UserId},
+			{Key: "budget", Value: service.Budget},
+			{Key: "depart", Value: service.Depart},
+			{Key: "start", Value: service.Start},
+			{Key: "end", Value: service.End},
+			{Key: "subPlans", Value: service.SubPlans},
 			{Key: "updateTime", Value: time.Now().String()},
 		}},
 	}
-	result, err := noteCollection.UpdateOne(context.TODO(), filter, update)
+	result, err := planCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return serializer.Success(err.Error())
 	}
 	return serializer.Success(result)
 }
 
-func (service *Note) DeleteNoteById(id string) serializer.Response {
-	noteCollection, _ = GetNoteCollection()
+func (service *Plan) DeletePlanById(id string) serializer.Response {
+	planCollection, _ = GetPlanCollection()
 
 	objectId, _ := primitive.ObjectIDFromHex(id)
 	filter := bson.D{{Key: "_id", Value: objectId}, {Key: "deleted", Value: "0"}}
@@ -203,7 +209,7 @@ func (service *Note) DeleteNoteById(id string) serializer.Response {
 			{Key: "updateTime", Value: time.Now().String()},
 		}},
 	}
-	result, err := noteCollection.UpdateOne(context.TODO(), filter, update)
+	result, err := planCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return serializer.Success(err.Error())
 	}

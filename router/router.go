@@ -99,5 +99,16 @@ func NewRouter() *gin.Engine {
 		note.DELETE("/:id", api.DeleteNoteById)
 	}
 
+	plan := r.Group("/plan")
+	{
+		plan.GET("/:id", api.GetPlanById)
+		plan.GET("/", api.GetPlanList)
+		plan.POST("/page", api.GetPlanPage)
+		plan.POST("/page/query", api.GetPlanPageFuzzy)
+		plan.POST("/", api.CreatePlan)
+		plan.PUT("/", api.UpdatePlan)
+		plan.DELETE("/:id", api.DeletePlanById)
+	}
+
 	return r
 }
