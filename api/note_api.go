@@ -7,19 +7,19 @@ import (
 )
 
 func GetNoteById(c *gin.Context) {
-	noteService := service.NoteService{}
+	noteService := service.Note{}
 	res := noteService.GetNoteById(c.Param("id"))
 	c.JSON(200, res)
 }
 
 func GetNoteList(c *gin.Context) {
-	noteService := service.NoteService{}
+	noteService := service.Note{}
 	res := noteService.GetNoteList()
 	c.JSON(200, res)
 }
 
 func GetNotePage(c *gin.Context) {
-	noteService := service.NoteService{}
+	noteService := service.Note{}
 	p := vo.Page{}
 	if err := c.ShouldBind(&p); err == nil {
 		res := noteService.GetNotePage(p)
@@ -28,7 +28,7 @@ func GetNotePage(c *gin.Context) {
 }
 
 func GetNotePageFuzzy(c *gin.Context) {
-	noteService := service.NoteService{}
+	noteService := service.Note{}
 	p := vo.Page{}
 	if err := c.ShouldBind(&p); err == nil {
 		res := noteService.GetNotePageFuzzy(p)
@@ -37,7 +37,7 @@ func GetNotePageFuzzy(c *gin.Context) {
 }
 
 func CreateNote(c *gin.Context) {
-	noteService := service.NoteService{}
+	noteService := service.Note{}
 	if err := c.ShouldBind(&noteService); err == nil {
 		res := noteService.CreateNote()
 		c.JSON(200, res)
@@ -45,7 +45,7 @@ func CreateNote(c *gin.Context) {
 }
 
 func UpdateNote(c *gin.Context) {
-	noteService := service.NoteService{}
+	noteService := service.Note{}
 	if err := c.ShouldBind(&noteService); err == nil {
 		res := noteService.UpdateNote()
 		c.JSON(200, res)
@@ -53,7 +53,7 @@ func UpdateNote(c *gin.Context) {
 }
 
 func DeleteNoteById(c *gin.Context) {
-	noteService := service.NoteService{}
+	noteService := service.Note{}
 	res := noteService.DeleteNoteById(c.Param("id"))
 	c.JSON(200, res)
 }

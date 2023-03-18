@@ -10,11 +10,10 @@ import (
 	"ltt-gc/config"
 	"ltt-gc/model/vo"
 	"ltt-gc/serializer"
-	"sync"
 	"time"
 )
 
-type NoteService struct {
+type Note struct {
 	ID         primitive.ObjectID `bson:"_id,omitempty"`
 	UserId     string             `bson:"userId,omitempty"`
 	UserName   string             `bson:"userName,omitempty"`
@@ -32,22 +31,20 @@ type NoteService struct {
 }
 
 var (
+	client         *mongo.Client
 	noteCollection *mongo.Collection
-	once           sync.Once
 )
 
 // GetNoteCollection 获取note操作集合
-func GetNoteCollection() *mongo.Collection {
-	once.Do(func() {
-		client := config.NewMongoClient()
-		defer client.Disconnect(context.Background())
-		noteCollection = client.Database("travelservice").Collection("note")
-	})
-	return noteCollection
+func GetNoteCollection() (*mongo.Collection, error) {
+	client = config.NewMongoClient()
+	noteCollection = client.Database("travelservice").Collection("chat")
+	return noteCollection, nil
 }
 
-func (service *NoteService) GetNoteById(id string) serializer.Response {
-	noteCollection = GetNoteCollection()
+func (service *Note) GetNoteById(id string) serializer.Response {
+	noteCollection, _ = GetNoteCollection()
+
 	// 新版ObjectId转换方法
 	objectId, _ := primitive.ObjectIDFromHex(id)
 	filter := bson.D{{Key: "_id", Value: objectId}, {Key: "deleted", Value: "0"}}
@@ -56,19 +53,20 @@ func (service *NoteService) GetNoteById(id string) serializer.Response {
 	result["id"] = result["_id"]
 	delete(result, "_id")
 	if err != nil {
-		return serializer.Error(serializer.NoteNotExist)
+		return serializer.Error(err.Error())
 	}
 	return serializer.Success(result)
 }
 
 // 数据量多时不建议使用
-func (service *NoteService) GetNoteList() serializer.Response {
-	noteCollection = GetNoteCollection()
+func (service *Note) GetNoteList() serializer.Response {
+	noteCollection, _ = GetNoteCollection()
+
 	filter := bson.D{{Key: "deleted", Value: "0"}}
 	var result []map[string]interface{}
 	cur, err := noteCollection.Find(context.TODO(), filter)
 	if err != nil {
-		return serializer.Success(serializer.ServerError)
+		return serializer.Success(err.Error())
 	}
 	defer cur.Close(context.Background())
 	err = cur.All(context.Background(), &result)
@@ -76,8 +74,9 @@ func (service *NoteService) GetNoteList() serializer.Response {
 	return serializer.Success(result)
 }
 
-func (service *NoteService) GetNotePage(p vo.Page) serializer.Response {
-	noteCollection = GetNoteCollection()
+func (service *Note) GetNotePage(p vo.Page) serializer.Response {
+	noteCollection, _ = GetNoteCollection()
+
 	filter := bson.D{{Key: "deleted", Value: "0"}}
 	var findOptions *options.FindOptions = &options.FindOptions{}
 
@@ -91,7 +90,7 @@ func (service *NoteService) GetNotePage(p vo.Page) serializer.Response {
 	var result []map[string]interface{}
 	cur, err := noteCollection.Find(context.TODO(), filter, findOptions)
 	if err != nil {
-		return serializer.Success(serializer.ServerError)
+		return serializer.Success(err.Error())
 	}
 	defer cur.Close(context.Background())
 	err = cur.All(context.Background(), &result)
@@ -105,8 +104,9 @@ func (service *NoteService) GetNotePage(p vo.Page) serializer.Response {
 	return serializer.Success(result)
 }
 
-func (service *NoteService) GetNotePageFuzzy(p vo.Page) serializer.Response {
-	noteCollection = GetNoteCollection()
+func (service *Note) GetNotePageFuzzy(p vo.Page) serializer.Response {
+	noteCollection, _ = GetNoteCollection()
+
 	filter := bson.M{
 		"content": primitive.Regex{
 			Pattern: p.QueryStr,
@@ -126,7 +126,7 @@ func (service *NoteService) GetNotePageFuzzy(p vo.Page) serializer.Response {
 	var result []map[string]interface{}
 	cur, err := noteCollection.Find(context.TODO(), filter, findOptions)
 	if err != nil {
-		return serializer.Success(serializer.ServerError)
+		return serializer.Success(err.Error())
 	}
 	defer cur.Close(context.Background())
 	err = cur.All(context.Background(), &result)
@@ -140,9 +140,10 @@ func (service *NoteService) GetNotePageFuzzy(p vo.Page) serializer.Response {
 	return serializer.Success(result)
 }
 
-func (service *NoteService) CreateNote() serializer.Response {
-	noteCollection = GetNoteCollection()
-	note := NoteService{
+func (service *Note) CreateNote() serializer.Response {
+	noteCollection, _ = GetNoteCollection()
+
+	note := Note{
 		ID:         primitive.NewObjectID(),
 		UserId:     service.UserId,
 		UserName:   service.UserName,
@@ -161,14 +162,15 @@ func (service *NoteService) CreateNote() serializer.Response {
 	objId, err := noteCollection.InsertOne(context.TODO(), note)
 	if err != nil {
 		fmt.Println(err)
-		return serializer.Success(serializer.ServerError)
+		return serializer.Success(err.Error())
 	}
 	return serializer.Success(objId.InsertedID)
 }
 
 // 需要传入完整数据
-func (service *NoteService) UpdateNote() serializer.Response {
-	noteCollection = GetNoteCollection()
+func (service *Note) UpdateNote() serializer.Response {
+	noteCollection, _ = GetNoteCollection()
+
 	objectId := service.ID
 	fmt.Println(objectId)
 	filter := bson.D{{Key: "_id", Value: objectId}, {Key: "deleted", Value: "0"}}
@@ -186,13 +188,14 @@ func (service *NoteService) UpdateNote() serializer.Response {
 	}
 	result, err := noteCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		return serializer.Success(serializer.ServerError)
+		return serializer.Success(err.Error())
 	}
 	return serializer.Success(result)
 }
 
-func (service *NoteService) DeleteNoteById(id string) serializer.Response {
-	noteCollection = GetNoteCollection()
+func (service *Note) DeleteNoteById(id string) serializer.Response {
+	noteCollection, _ = GetNoteCollection()
+
 	objectId, _ := primitive.ObjectIDFromHex(id)
 	filter := bson.D{{Key: "_id", Value: objectId}, {Key: "deleted", Value: "0"}}
 	update := bson.D{
@@ -203,7 +206,7 @@ func (service *NoteService) DeleteNoteById(id string) serializer.Response {
 	}
 	result, err := noteCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		return serializer.Success(serializer.ServerError)
+		return serializer.Success(err.Error())
 	}
 	return serializer.Success(result)
 }
