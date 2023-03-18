@@ -51,7 +51,7 @@ var (
 
 func GetPlanCollection() (*mongo.Collection, error) {
 	client := config.NewMongoClient()
-	planCollection = client.Database("travelservice").Collection("chat")
+	planCollection = client.Database("travelservice").Collection("plan")
 	return planCollection, nil
 }
 

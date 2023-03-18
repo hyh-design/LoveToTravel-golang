@@ -29,7 +29,7 @@ func LoadConfig() {
 	}
 }
 
-func LoadMysql() {
+func LoadMysqlConfig() {
 	//SQL日志自定义
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
@@ -51,7 +51,7 @@ func NewDBClient(ctx context.Context) *gorm.DB {
 	return db.WithContext(ctx)
 }
 
-func LoadMongo() {
+func LoadMongoConfig() {
 	clientOptions := options.Client().ApplyURI(viper.GetString("mongo.dns"))
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
@@ -66,6 +66,6 @@ func NewMongoClient() *mongo.Client {
 
 func Init() {
 	LoadConfig()
-	LoadMysql()
-	LoadMongo()
+	LoadMysqlConfig()
+	LoadMongoConfig()
 }

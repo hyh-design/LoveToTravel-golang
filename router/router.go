@@ -3,8 +3,8 @@ package router
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	swaggerfiles "github.com/swaggo/files"     // swagger embed files
-	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
 	"ltt-gc/api"
 	"ltt-gc/config"
@@ -40,17 +40,11 @@ func NewRouter() *gin.Engine {
 		admin.DELETE("/:id", api.DeleteAdminById)
 	}
 
-	/**
-	TODO
-	更改密码
-	更改个人信息
-	*/
-
 	r.POST("/login", api.Login)
 	r.POST("/register", api.CreateUser)
 
-	//user := r.Group("/user", handler.JWTAuthMiddleware())
-	user := r.Group("/user")
+	user := r.Group("/user", handler.JWTAuthMiddleware())
+	//user := r.Group("/user")
 	{
 		user.GET("/token", api.GetUserByToken)
 		user.GET("/:email", api.GetUserByEmail)

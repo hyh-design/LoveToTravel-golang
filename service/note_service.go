@@ -37,7 +37,7 @@ var (
 // GetNoteCollection 获取note操作集合
 func GetNoteCollection() (*mongo.Collection, error) {
 	client := config.NewMongoClient()
-	noteCollection = client.Database("travelservice").Collection("chat")
+	noteCollection = client.Database("travelservice").Collection("note")
 	return noteCollection, nil
 }
 
