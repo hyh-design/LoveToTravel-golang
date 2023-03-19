@@ -24,6 +24,12 @@ func GetCityList(c *gin.Context) {
 	c.JSON(200, res)
 }
 
+func GetHotCity(c *gin.Context) {
+	cityService := service.CityService{}
+	res := cityService.GetHotCity(c.Request.Context())
+	c.JSON(200, res)
+}
+
 func GetCityPage(c *gin.Context) {
 	cityService := service.CityService{}
 	p := vo.Page{}

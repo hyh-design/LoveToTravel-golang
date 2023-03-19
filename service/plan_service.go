@@ -70,6 +70,24 @@ func (service *Plan) GetPlanById(id string) serializer.Response {
 	return serializer.Success(result)
 }
 
+func (service *Plan) GetPlanByCityId(id string) serializer.Response {
+	planCollection, _ = GetPlanCollection()
+
+	filter := bson.M{
+		"subPlans": bson.M{"$elemMatch": bson.M{
+			"cityId": id,
+		},
+		},
+	}
+	var result map[string]interface{}
+	err := planCollection.FindOne(context.TODO(), filter).Decode(&result)
+	subPlans := result["subPlans"]
+	if err != nil {
+		return serializer.Error(err.Error())
+	}
+	return serializer.Success(subPlans)
+}
+
 func (service *Plan) GetPlanList() serializer.Response {
 	planCollection, _ = GetPlanCollection()
 
@@ -112,7 +130,8 @@ func (service *Plan) GetPlanPage(p vo.Page) serializer.Response {
 		delete(result[i], "_id")
 	}
 
-	return serializer.Success(result)
+	p.Records = result
+	return serializer.Success(p)
 }
 
 func (service *Plan) GetPlanPageFuzzy(p vo.Page) serializer.Response {
@@ -148,7 +167,8 @@ func (service *Plan) GetPlanPageFuzzy(p vo.Page) serializer.Response {
 		delete(result[i], "_id")
 	}
 
-	return serializer.Success(result)
+	p.Records = result
+	return serializer.Success(p)
 }
 
 func (service *Plan) CreatePlan() serializer.Response {

@@ -99,8 +99,8 @@ func (service *Note) GetNotePage(p vo.Page) serializer.Response {
 		result[i]["id"] = result[i]["_id"]
 		delete(result[i], "_id")
 	}
-
-	return serializer.Success(result)
+	p.Records = result
+	return serializer.Success(p)
 }
 
 func (service *Note) GetNotePageFuzzy(p vo.Page) serializer.Response {
@@ -136,7 +136,8 @@ func (service *Note) GetNotePageFuzzy(p vo.Page) serializer.Response {
 		delete(result[i], "_id")
 	}
 
-	return serializer.Success(result)
+	p.Records = result
+	return serializer.Success(p)
 }
 
 func (service *Note) CreateNote() serializer.Response {

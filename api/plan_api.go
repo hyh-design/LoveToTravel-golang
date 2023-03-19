@@ -12,6 +12,12 @@ func GetPlanById(c *gin.Context) {
 	c.JSON(200, res)
 }
 
+func GetPlanByCityId(c *gin.Context) {
+	planService := service.Plan{}
+	res := planService.GetPlanByCityId(c.Param("id"))
+	c.JSON(200, res)
+}
+
 func GetPlanList(c *gin.Context) {
 	planService := service.Plan{}
 	res := planService.GetPlanList()

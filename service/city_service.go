@@ -48,6 +48,16 @@ func (service *CityService) GetCityList(ctx context.Context) serializer.Response
 	return serializer.Success(cities)
 }
 
+func (service *CityService) GetHotCity(ctx context.Context) serializer.Response {
+	cityDao := dao.NewCityDao(ctx)
+	cities, err := cityDao.GetHotCity()
+	if err != nil {
+		logging.Info(err)
+		return serializer.Error(serializer.ServerError)
+	}
+	return serializer.Success(cities)
+}
+
 func (service *CityService) GetCityPage(ctx context.Context, p vo.Page) serializer.Response {
 	cityDao := dao.NewCityDao(ctx)
 	cities, err := cityDao.GetCityPage(p)

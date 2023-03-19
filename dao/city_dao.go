@@ -32,6 +32,11 @@ func (dao *CityDao) GetCityById(id string) (city *model.City, err error) {
 }
 
 func (dao *CityDao) GetCityList() (city []*model.City, err error) {
+	err = dao.DB.Table("hot_city").Find(&city).Debug().Error
+	return
+}
+
+func (dao *CityDao) GetHotCity() (city []*model.City, err error) {
 	err = dao.DB.Find(&city).Debug().Error
 	return
 }

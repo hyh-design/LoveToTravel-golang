@@ -33,6 +33,12 @@ func (dao *SceneryDao) GetSceneryById(id string) (scenery *model.Scenery, err er
 	return
 }
 
+func (dao *SceneryDao) GetSceneryByCityId(id string) (scenery []*model.Scenery, err error) {
+	err = dao.DB.
+		Where("city_id=?", id).Find(&scenery).Debug().Error
+	return
+}
+
 func (dao *SceneryDao) GetSceneryPage(page vo.Page) (sceneries []*model.Scenery, err error) {
 	err = dao.DB.Limit(page.PageSize).Offset((page.PageNum - 1) * page.PageSize).Find(&sceneries).Error
 	return

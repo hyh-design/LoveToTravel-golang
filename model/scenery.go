@@ -4,8 +4,8 @@ import "gorm.io/gorm"
 
 type Scenery struct {
 	gorm.Model
-	Id           string `form:"Id" json:"Id"`
-	Name         string `form:"Name" json:"Name"`
+	Id           string `form:"id" json:"id"`
+	Name         string `form:"name" json:"name"`
 	Introduction string `form:"introduction" json:"introduction"`
 	Score        string `form:"score" json:"score"`
 	Ticket       string `form:"ticket" json:"ticket"`

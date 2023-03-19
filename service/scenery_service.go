@@ -38,6 +38,17 @@ func (service *SceneryService) GetSceneryById(ctx context.Context, id string) se
 	return serializer.Success(scenery)
 }
 
+func (service *SceneryService) GetSceneryByCityId(ctx context.Context, id string) serializer.Response {
+	sceneryDao := dao.NewSceneryDao(ctx)
+	scenery, err := sceneryDao.GetSceneryByCityId(id)
+	if err != nil {
+		logging.Info(err)
+		return serializer.Error(serializer.ServerError)
+	}
+
+	return serializer.Success(scenery)
+}
+
 func (service *SceneryService) GetSceneryByName(ctx context.Context, name string) serializer.Response {
 	sceneryDao := dao.NewSceneryDao(ctx)
 	scenery, err := sceneryDao.GetSceneryByName(name)

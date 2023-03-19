@@ -12,6 +12,12 @@ func GetSceneryById(c *gin.Context) {
 	c.JSON(200, res)
 }
 
+func GetSceneryByCityId(c *gin.Context) {
+	sceneryService := service.SceneryService{}
+	res := sceneryService.GetSceneryByCityId(c.Request.Context(), c.Param("id"))
+	c.JSON(200, res)
+}
+
 func GetSceneryByName(c *gin.Context) {
 	sceneryService := service.SceneryService{}
 	res := sceneryService.GetSceneryByName(c.Request.Context(), c.Param("name"))
