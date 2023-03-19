@@ -36,3 +36,6 @@ go build main.go
 
 ## Author
 + hyh315
++ Email: 2856400640@qq.com
+
+If you have any questions or issues, please do not hesitate to contact me at 2856400640@qq.com.
