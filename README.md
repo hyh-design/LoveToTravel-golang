@@ -23,16 +23,16 @@ go build main.go
 ```
 
 ## 依赖版本
-· Go version: 1.16 或更高版本
-· MySQL version: 5.7 或更高版本
-· MongoDB version: 4.2 或更高版本
++ Go version: 1.16 或更高版本
++ MySQL version: 5.7 或更高版本
++ MongoDB version: 4.2 或更高版本
 
 ## 技术栈
-· Go
-· Gin
-· Gorm
-· MySQL
-· MongoDB
++ Go
++ Gin
++ Gorm
++ MySQL
++ MongoDB
 
 ## 作者
-hyh315
++ hyh315
