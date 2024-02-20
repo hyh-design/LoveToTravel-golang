@@ -35,7 +35,7 @@ go build main.go
 + MongoDB
 
 ## Author
-+ hyh315
++ hyh-design
 + Email: 2856400640@qq.com
 
 If you have any questions or issues, please do not hesitate to contact me at 2856400640@qq.com.
